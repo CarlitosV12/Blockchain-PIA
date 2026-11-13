@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DApp - Registro Descentralizado</title>
+    
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #portada-proyecto {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        #nav-wallet {
+            background-color: #ffffff;
+            border-bottom: 2px solid #ccc;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .boton-primario {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .boton-peligro {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .boton-secundario {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .contenedor-principal {
+            width: 80%;
+            margin: 0 auto; 
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+
+        .caja-texto {
+            width: 90%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        #mensajes-sistema {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ffffcc;
+            border: 1px solid #ffcc00;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Portada-->
+    <div id="portada-proyecto">
+        <h2>Aplicaciones basadas en cadenas de bloques</h2>
+        <p><strong>Profesor:</strong>ALEJANDRO MUNIZ SOLORIO</p>
+        <p>
+            <strong>Integrantes:</strong><br>
+            1. Ailton Israel de la Cruz Salazar - Matrícula  (Blockchain)<br>
+            2. Carlos Alexis Vargas Flores - Matrícula  (Frontend)<br>
+            3. Andres Espionza Galiindo Matrícula  (Web3)<br>
+        </p>
+        <p><strong>Grupo: 061</strong> 001</p>
+        <h1>Proyecto PIA</h1>
+    </div>
+
+    <!-- Barra de navegacion -->
+    <div id="nav-wallet">
+        <div>
+            <strong>Estado:</strong> 
+            <span id="texto-estado-wallet" style="color: red;">Desconectado</span>
+        </div>
+        <div>
+            <!-- Variables-->
+            <button id="btn-conectar-wallet" class="boton-primario" onclick="simularConexion()">Conectar Wallet</button>
+            <button id="btn-desconectar-wallet" class="boton-peligro" style="display: none;" onclick="simularDesconexion()">Desconectar</button>
+        </div>
+    </div>
+
+
+    <div class="contenedor-principal">
+        
+        
+        <div id="zona-solo-lectura">
+            <h3 style="text-decoration: underline;">Consultar registros publicos</h3>
+            <p>Esta aplicación permite guardar información inmutable en la blockchain mediante un pago.</p>
+            
+            <label for="input-leer-direccion">Dirección a consultar (0x...):</label>
+            <br>
+            <input type="text" id="input-leer-direccion" class="caja-texto" placeholder="Ingresa la wallet del usuario a buscar">
+            <br>
+            <button id="btn-leer-info" class="boton-secundario">Buscar en Blockchain</button>
+        </div>
+
+        <br><hr><br>
+
+       
+        <!-- Zona interactiva-->
+        <div id="zona-interactiva" style="display: none;">
+            <h3 style="color: #003366;">Registrar nueva información</h3>
+            <p><strong>Costo de registro:</strong> <span id="texto-costo">0.01 ETH</span></p>
+            
+            <label>Escribe los datos a proteger en la Blockchain:</label>
+            <br>
+            <textarea id="input-datos-usuario" class="caja-texto" rows="4" placeholder="Ej. El código fuente de mi algoritmo..."></textarea>
+            <br>
+            <button id="btn-enviar-pago" class="boton-primario">Pagar y registrar dato</button>
+            
+            <br><br>
+            
+            <!-- Zona admin-->
+            <div style="background-color: #ffe6e6; padding: 10px; border: 1px dashed red;">
+                <h4>Panel de administrador</h4>
+                <input type="text" id="input-limpiar-direccion" placeholder="Dirección a borrar" style="padding: 5px;">
+                <button id="btn-limpiar" class="boton-peligro">Limpiar registro</button>
+            </div>
+        </div>
+
+        <!-- Mensajes para el usuarii -->
+        <div id="mensajes-sistema">
+            <strong>Consola del sistema:</strong><br>
+            <span id="texto-resultado-blockchain">Esperando acciones...</span>
+        </div>
+
+    </div>
+
+    <!-- 
+      Nota: Andy debes borrar estas funciones de simulación y meter la lógica real 
+    -->
+    <script>
+        // Función obtener elementos
+        function getEl(id) {
+            return document.getElementById(id);
+        }
+
+        function simularConexion() {
+            // Cambiar textos y botones
+            getEl("texto-estado-wallet").innerText = "Conectado: 0x1234...abcd";
+            getEl("texto-estado-wallet").style.color = "green";
+            getEl("texto-resultado-blockchain").innerText = "Wallet conectada exitosamente. Ya puedes registrar datos.";
+            
+            getEl("btn-conectar-wallet").style.display = "none";
+            getEl("btn-desconectar-wallet").style.display = "inline-block";
+            
+            // Mostrar la zona interactiva
+            getEl("zona-interactiva").style.display = "block";
+        }
+
+        function simularDesconexion() {
+            // Revertir a estado original
+            getEl("texto-estado-wallet").innerText = "Desconectado";
+            getEl("texto-estado-wallet").style.color = "red";
+            getEl("texto-resultado-blockchain").innerText = "Wallet desconectada. Solo puedes leer registros.";
+            
+            getEl("btn-conectar-wallet").style.display = "inline-block";
+            getEl("btn-desconectar-wallet").style.display = "none";
+            
+            // Ocultar la zona interactiva
+            getEl("zona-interactiva").style.display = "none";
+        }
+    </script>
+</body>
+</html>
