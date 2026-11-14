@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DApp - Registro Descentralizado</title>
+    
+    <style>
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #f0f2f5;
+            margin: 0;
+            padding: 0;
+        }
+        
+        #portada-proyecto {
+            font-family: Arial, Helvetica, sans-serif;
+            background-color: #003366;
+            color: white;
+            text-align: center;
+            padding: 20px;
+            margin-bottom: 15px;
+        }
+
+        #nav-wallet {
+            background-color: #ffffff;
+            border-bottom: 2px solid #ccc;
+            padding: 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .boton-primario {
+            background-color: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .boton-peligro {
+            background-color: #f44336;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .boton-secundario {
+            background-color: #008CBA;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        .contenedor-principal {
+            width: 80%;
+            margin: 0 auto; 
+            background-color: white;
+            padding: 20px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
+
+        .caja-texto {
+            width: 90%;
+            padding: 10px;
+            margin-top: 10px;
+            margin-bottom: 10px;
+        }
+
+        #mensajes-sistema {
+            margin-top: 20px;
+            padding: 15px;
+            background-color: #ffffcc;
+            border: 1px solid #ffcc00;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="portada-proyecto">
+        <h2>Aplicaciones basadas en cadenas de bloques</h2>
+        <p><strong>Profesor:</strong>ALEJANDRO MUÑIZ SOLORIO</p>
+        <p>
+            <strong>Integrantes:</strong><br>
+            1. Ailton Israel de la Cruz Salazar - 2066258 (Blockchain)<br>
+            2. Carlos Alexis Vargas Flores - 2069861 (Frontend)<br>
+            3. Andres Espionza Galindo 2120658 (Web3)<br>
+        </p>
+        <p><strong>Grupo: 061</strong> 001</p>
+        <h1>Proyecto PIA</h1>
+    </div>
+
+    <div id="nav-wallet">
+        <div>
+            <strong>Estado:</strong> 
+            <span id="texto-estado-wallet" style="color: red;">Desconectado</span>
+        </div>
+        <div>
+            <button id="btn-conectar-wallet" class="boton-primario">Conectar Wallet</button>
+            <button id="btn-desconectar-wallet" class="boton-peligro" style="display: none;">Desconectar</button>
+        </div>
+    </div>
+
+    <div class="contenedor-principal">
+        
+        <div id="zona-solo-lectura">
+            <h3 style="text-decoration: underline;">Consultar registros publicos</h3>
+            <p>Esta aplicación permite guardar información inmutable en la blockchain mediante un pago.</p>
+            
+            <label for="input-leer-direccion">Dirección a consultar (0x...):</label>
+            <br>
+            <input type="text" id="input-leer-direccion" class="caja-texto" placeholder="Ingresa la wallet del usuario a buscar">
+            <br>
+            <button id="btn-leer-info" class="boton-secundario">Buscar en Blockchain</button>
+        </div>
+
+        <br><hr><br>
+
+        <div id="zona-interactiva" style="display: none;">
+            <h3 style="color: #003366;">Registrar nueva información</h3>
+            <p><strong>Costo de registro:</strong> <span id="texto-costo">0.01 ETH</span></p>
+            
+            <label>Escribe los datos a proteger en la Blockchain:</label>
+            <br>
+            <textarea id="input-datos-usuario" class="caja-texto" rows="4" placeholder="Ej. El código fuente de mi algoritmo..."></textarea>
+            <br>
+            <button id="btn-enviar-pago" class="boton-primario">Pagar y registrar dato</button>
+            
+            <br><br>
+            
+            <div style="background-color: #ffe6e6; padding: 10px; border: 1px dashed red;">
+                <h4>Panel de administrador</h4>
+                <input type="text" id="input-limpiar-direccion" placeholder="Dirección a borrar" style="padding: 5px;">
+                <button id="btn-limpiar" class="boton-peligro">Limpiar registro</button>
+            </div>
+        </div>
+
+        <div id="mensajes-sistema">
+            <strong>Consola del sistema:</strong><br>
+            <span id="texto-resultado-blockchain">Esperando acciones...</span>
+        </div>
+
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
+
+    <script>
+        const DIRECCION_CONTRATO = "0xD7ACd2a9FD159E69Bb102A1ca21C9a3e3A5F771B";
+        
+        const ABI_CONTRATO = [
+            {
+                "inputs": [{"internalType": "uint256", "name": "_costoInicial", "type": "uint256"}],
+                "stateMutability": "nonpayable",
+                "type": "constructor"
+            },
+            {
+                "anonymous": false,
+                "inputs": [{"indexed": true, "internalType": "address", "name": "usuarioAfectado", "type": "address"}],
+                "name": "DatoLimpiado",
+                "type": "event"
+            },
+            {
+                "anonymous": false,
+                "inputs": [
+                    {"indexed": true, "internalType": "address", "name": "usuario", "type": "address"},
+                    {"indexed": false, "internalType": "string", "name": "informacion", "type": "string"},
+                    {"indexed": false, "internalType": "uint256", "name": "pago", "type": "uint256"}
+                ],
+                "name": "DatoRegistrado",
+                "type": "event"
+            },
+            {
+                "inputs": [],
+                "name": "administrador",
+                "outputs": [{"internalType": "address", "name": "", "type": "address"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "costoRegistro",
+                "outputs": [{"internalType": "uint256", "name": "", "type": "uint256"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "_usuario", "type": "address"}],
+                "name": "leerDato",
+                "outputs": [{"internalType": "string", "name": "", "type": "string"}],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "_usuario", "type": "address"}],
+                "name": "limpiarRegistro",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "string", "name": "_informacion", "type": "string"}],
+                "name": "registrarDato",
+                "outputs": [],
+                "stateMutability": "payable",
+                "type": "function"
+            },
+            {
+                "inputs": [{"internalType": "address", "name": "", "type": "address"}],
+                "name": "registros",
+                "outputs": [
+                    {"internalType": "string", "name": "informacion", "type": "string"},
+                    {"internalType": "bool", "name": "existe", "type": "bool"}
+                ],
+                "stateMutability": "view",
+                "type": "function"
+            },
+            {
+                "inputs": [],
+                "name": "retirarFondos",
+                "outputs": [],
+                "stateMutability": "nonpayable",
+                "type": "function"
+            }
+        ];
+
+        let provider = null;
+        let signer = null;
+        let contrato = null;
+        let cuentaActual = null;
+
+        function getEl(id) {
+            return document.getElementById(id);
+        }
+
+        function mostrarMensaje(texto, esError = false) {
+            const el = getEl("texto-resultado-blockchain");
+            if (el) {
+                el.innerText = texto;
+                el.style.color = esError ? "red" : "black";
+            }
+        }
+
+        document.addEventListener("DOMContentLoaded", () => {
+            mostrarMensaje("Aplicación lista. Conecta tu wallet para habilitar el registro o usa la consulta pública.");
+
+            const btnConectar = getEl("btn-conectar-wallet");
+            const btnDesconectar = getEl("btn-desconectar-wallet");
+            const btnLeer = getEl("btn-leer-info");
+            const btnEnviar = getEl("btn-enviar-pago");
+            const btnLimpiar = getEl("btn-limpiar");
+
+            if (btnConectar) btnConectar.onclick = conectarWalletReal;
+            if (btnDesconectar) btnDesconectar.onclick = desconectarWalletReal;
+            if (btnLeer) btnLeer.onclick = leerInformacionBlockchain;
+            if (btnEnviar) btnEnviar.onclick = registrarDatoBlockchain;
+            if (btnLimpiar) btnLimpiar.onclick = limpiarRegistroAdmin;
+        });
+
+        async function conectarWalletReal() {
+            try {
+                if (typeof window.ethereum === "undefined") {
+                    alert("No se detectó MetaMask en tu navegador.");
+                    return;
+                }
+
+                provider = new ethers.BrowserProvider(window.ethereum);
+                const accounts = await provider.send("eth_requestAccounts", []);
+                
+                if (!accounts || accounts.length === 0) return;
+
+                cuentaActual = accounts[0];
+                signer = await provider.getSigner();
+                contrato = new ethers.Contract(DIRECCION_CONTRATO, ABI_CONTRATO, signer);
+
+                const corto = cuentaActual.substring(0, 6) + "..." + cuentaActual.substring(38);
+                getEl("texto-estado-wallet").innerText = "Conectado: " + corto;
+                getEl("texto-estado-wallet").style.color = "green";
+                
+                getEl("btn-conectar-wallet").style.display = "none";
+                getEl("btn-desconectar-wallet").style.display = "inline-block";
+                
+                getEl("zona-interactiva").style.display = "block";
+                
+                try {
+                    const costoWei = await contrato.costoRegistro();
+                    getEl("texto-costo").innerText = ethers.formatEther(costoWei) + " ETH";
+                } catch (err) {
+                    console.log(err);
+                }
+
+                mostrarMensaje("Wallet conectada con éxito: " + cuentaActual);
+
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje("Error al conectar la wallet: " + (error.reason || error.message), true);
+            }
+        }
+
+        function desconectarWalletReal() {
+            provider = null;
+            signer = null;
+            contrato = null;
+            cuentaActual = null;
+
+            getEl("texto-estado-wallet").innerText = "Desconectado";
+            getEl("texto-estado-wallet").style.color = "red";
+            
+            getEl("btn-conectar-wallet").style.display = "inline-block";
+            getEl("btn-desconectar-wallet").style.display = "none";
+            
+            getEl("zona-interactiva").style.display = "none";
+            mostrarMensaje("Wallet desconectada. Operando en modo solo lectura.");
+        }
+
+        async function leerInformacionBlockchain() {
+            try {
+                const direccionBuscada = getEl("input-leer-direccion").value.trim();
+                if (!direccionBuscada || !ethers.isAddress(direccionBuscada)) {
+                    alert("Por favor ingresa una dirección de wallet válida (0x...) para consultar.");
+                    return;
+                }
+
+                mostrarMensaje("Consultando el contrato inteligente en la blockchain...");
+
+                let contratoLectura = contrato;
+                if (!contratoLectura) {
+                    if (typeof window.ethereum !== "undefined") {
+                        const tempProvider = new ethers.BrowserProvider(window.ethereum);
+                        contratoLectura = new ethers.Contract(DIRECCION_CONTRATO, ABI_CONTRATO, tempProvider);
+                    } else {
+                        throw new Error("Conecta MetaMask o usa un proveedor Web3 para leer el contrato.");
+                    }
+                }
+
+                const resultado = await contratoLectura.leerDato(direccionBuscada);
+                mostrarMensaje("Información encontrada para [" + direccionBuscada + "]: \"" + resultado + "\"");
+
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje("Aviso del contrato: El usuario especificado no tiene registros guardados.", true);
+            }
+        }
+
+        async function registrarDatoBlockchain() {
+            try {
+                if (!contrato) {
+                    alert("Debes conectar tu wallet para realizar modificaciones.");
+                    return;
+                }
+
+                const textoDatos = getEl("input-datos-usuario").value.trim();
+                if (!textoDatos) {
+                    alert("Escribe información válida para guardar.");
+                    return;
+                }
+
+                mostrarMensaje("Obteniendo tarifa y preparando transacción en MetaMask...");
+                const costoWei = await contrato.costoRegistro();
+
+                const tx = await contrato.registrarDato(textoDatos, { value: costoWei });
+                
+                mostrarMensaje("Transacción enviada (" + tx.hash.substring(0, 12) + "...). Esperando confirmación...");
+
+                await tx.wait();
+
+                mostrarMensaje("¡Éxito! Información firmada y guardada de forma inmutable en la blockchain.");
+                getEl("input-datos-usuario").value = "";
+
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje("Transacción fallida: " + (error.reason || error.message), true);
+            }
+        }
+
+        async function limpiarRegistroAdmin() {
+            try {
+                if (!contrato) {
+                    alert("Conecta tu wallet primero.");
+                    return;
+                }
+
+                const direccionAEliminar = getEl("input-limpiar-direccion").value.trim();
+                if (!ethers.isAddress(direccionAEliminar)) {
+                    alert("Ingresa una dirección válida a limpiar.");
+                    return;
+                }
+
+                if(!confirm("¿Estás seguro de limpiar el registro de esta wallet? (Requiere rol de Administrador)")) return;
+
+                mostrarMensaje("Enviando orden de limpieza administrativa...");
+                const tx = await contrato.limpiarRegistro(direccionAEliminar);
+                
+                await tx.wait();
+                mostrarMensaje("El registro de la dirección " + direccionAEliminar + " fue eliminado correctamente.");
+                getEl("input-limpiar-direccion").value = "";
+
+            } catch (error) {
+                console.error(error);
+                mostrarMensaje("Acción rechazada: Solo el administrador del contrato puede realizar esta acción.", true);
+            }
+        }
+    </script>
+</body>
+</html>
