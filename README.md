@@ -20,6 +20,9 @@ Se desarrollará una aplicación descentralizada (DApp) que utilice una blockcha
 
  ## Funcionamiento
 
+Escribe aqui Ailton
+ 
+
 Integrantes 
 >2069861	Carlos Alexis Vargas Flores
 >
