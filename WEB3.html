@@ -113,9 +113,9 @@
         
         <div id="zona-solo-lectura">
             <h3 style="text-decoration: underline;">Consultar registros publicos</h3>
-            <p>Esta aplicación permite guardar información inmutable en la blockchain mediante un pago.</p>
+            <p>Esta aplicación permite guardar información inmutable en la blockchain mediante un pago</p>
             
-            <label for="input-leer-direccion">Dirección a consultar (0x...):</label>
+            <label for="input-leer-direccion">Dirección a consultar(0x...):</label>
             <br>
             <input type="text" id="input-leer-direccion" class="caja-texto" placeholder="Ingresa la wallet del usuario a buscar">
             <br>
@@ -153,6 +153,8 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.13.2/ethers.umd.min.js"></script>
 
     <script>
+
+        //Ultima wallet que funcionaba
         const DIRECCION_CONTRATO = "0xD7ACd2a9FD159E69Bb102A1ca21C9a3e3A5F771B";
         
         const ABI_CONTRATO = [
@@ -233,6 +235,7 @@
 
         let provider = null;
         let signer = null;
+        
         let contrato = null;
         let cuentaActual = null;
 
@@ -249,7 +252,7 @@
         }
 
         document.addEventListener("DOMContentLoaded", () => {
-            mostrarMensaje("Aplicación lista. Conecta tu wallet para habilitar el registro o usa la consulta pública.");
+            mostrarMensaje("Aplicación lista cpnecta tu wallet para habilitar el registro o usa la consulta pública");
 
             const btnConectar = getEl("btn-conectar-wallet");
             const btnDesconectar = getEl("btn-desconectar-wallet");
@@ -303,7 +306,9 @@
                 mostrarMensaje("Error al conectar la wallet: " + (error.reason || error.message), true);
             }
         }
+// walletreal 
 
+        
         function desconectarWalletReal() {
             provider = null;
             signer = null;
@@ -317,14 +322,14 @@
             getEl("btn-desconectar-wallet").style.display = "none";
             
             getEl("zona-interactiva").style.display = "none";
-            mostrarMensaje("Wallet desconectada. Operando en modo solo lectura.");
+            mostrarMensaje("Wallet desconectada Operando en modo solo lectura.");
         }
-
+        //Informacio de la blockchain
         async function leerInformacionBlockchain() {
             try {
                 const direccionBuscada = getEl("input-leer-direccion").value.trim();
                 if (!direccionBuscada || !ethers.isAddress(direccionBuscada)) {
-                    alert("Por favor ingresa una dirección de wallet válida (0x...) para consultar.");
+                    alert("Por favor ingresa una dirección de wallet válida (0x...) para consultar");
                     return;
                 }
 
@@ -349,6 +354,8 @@
             }
         }
 
+
+        
         async function registrarDatoBlockchain() {
             try {
                 if (!contrato) {
@@ -380,7 +387,8 @@
             }
         }
 
-        async function limpiarRegistroAdmin() {
+        async function limpiarRegistroAdmin() 
+        {
             try {
                 if (!contrato) {
                     alert("Conecta tu wallet primero.");
@@ -393,9 +401,9 @@
                     return;
                 }
 
-                if(!confirm("¿Estás seguro de limpiar el registro de esta wallet? (Requiere rol de Administrador)")) return;
+                if(!confirm("¿Estás seguro de limpiar el registro de esta wallet?")) return;
 
-                mostrarMensaje("Enviando orden de limpieza administrativa...");
+                mostrarMensaje("Enviando orden de limpieza...");
                 const tx = await contrato.limpiarRegistro(direccionAEliminar);
                 
                 await tx.wait();
@@ -404,7 +412,8 @@
 
             } catch (error) {
                 console.error(error);
-                mostrarMensaje("Acción rechazada: Solo el administrador del contrato puede realizar esta acción.", true);
+                mostrarMensaje("Acción rechazada: Solo el administrador del contrato puede realizar esta acción", true);
+                //nanejo de errores
             }
         }
     </script>
