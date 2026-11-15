@@ -20,7 +20,11 @@ Se desarrollará una aplicación descentralizada (DApp) que utilice una blockcha
 
  ## Funcionamiento
 
-Escribe aqui Ailton
+Mediante pruebas realizadas el proyecto funciona correctamente
+1. Contrato: permite dar un registro de los datos validando el envío del costo inicial que se ocupa y que modificadores tiene el mismo contrato, se leen los datos ejecutando consultas publicas y gratuitas para recuperar los datos almacenados
+2. Remix VM: Es importante mencionar que para el uso de este proyecto nosotros comprobamos su uso mediante remix VM para la simulación de las transacciones y que de esta forma se pudiese dar el guardado de datos por medio de dinero simulado.
+3. Consideraciones de redes externas: al intentar conectar una wallet externa con un saldo que este en 0 las transacciones que requieren el pago no se podran procesar debido a que no hay un fondo que pueda ser transferido.
+Cubiertos estos 3 puntos entonces demostramos que el proyecto es funcional y utilizable para el uso de smart contracts y wallets, por medio de entornos simulados.
  
 
 Integrantes 
