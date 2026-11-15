@@ -3,7 +3,7 @@ pragma solidity ^0.8.19;
 
 /**
  * @title RegistroDatosProyecto
- * @dev Contrato ajustado exactamente a los nombres de función requeridos por la rúbrica del equipo.
+ * @dev Contrato 
  */
 contract RegistroDatosProyecto {
 
