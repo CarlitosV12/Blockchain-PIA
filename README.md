@@ -1,10 +1,11 @@
 # Blockchain-PIA
-PIA DE BLOCKCHAIN
+
+### PIA DE BLOCKCHAIN
 
 Se desarrollará una aplicación descentralizada (DApp) que utilice una blockchain local para guardar información firmada e inmutable, cumpliendo con la gestión de identidad mediante una wallet de software, opcionalmente se puede subir la aplicación a una red pública. 
 
  
-
+```
 1.- Inicia preguntando si se quiere conectar a la Blockchain a través de una wallet de software como metamask, phantom o cualquier otra similar 
 
 2.- En caso de rechazarlo mostrar la funcionalidad del proyecto sin permitir hacer ninguna modificación 
@@ -14,10 +15,10 @@ Se desarrollará una aplicación descentralizada (DApp) que utilice una blockcha
 4.- El proyecto debe atender una situación real o ficticia, no solo ser un conjunto de funciones agrupadas 
 
 5.- No se debe incluir funciones o actividades centralizadas
-
+```
  
 
- 
+ ## Funcionamiento
 
 Integrantes 
 >2069861	Carlos Alexis Vargas Flores
