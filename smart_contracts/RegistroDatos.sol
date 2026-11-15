@@ -7,7 +7,7 @@ pragma solidity ^0.8.19;
  */
 contract RegistroDatosProyecto {
 
-    // Variables obligatorias
+    // Variables que definimos en el grupo andy 
     address public administrador;
     uint256 public costoRegistro;
 
